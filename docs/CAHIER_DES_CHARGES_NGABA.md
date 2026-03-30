@@ -105,7 +105,7 @@ un contexte academique.
 - le trafic est simule et non mesure sur le terrain,
 - les capteurs sont representes par une estimation logique des files,
 - les vehicules sont geres sous forme agregee avec animation graphique,
-- Python est utilise ici comme langage de simulation pedagogique.
+- C++ avec Qt Widgets est utilise ici comme socle de simulation pedagogique.
 
 ## 12. Contraintes
 

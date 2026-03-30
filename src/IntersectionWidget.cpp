@@ -51,6 +51,80 @@ constexpr qreal kSafetyRadiusX = 5.3;
 // Declare une constante ou une valeur partagee par le systeme.
 constexpr qreal kSafetyRadiusY = 7.1;
 
+// Indique si le mouvement correspond a la premiere sortie apres entree dans l'anneau.
+bool isShortTurn(ngaba::Movement movement)
+// Ouvre un nouveau bloc d instructions.
+{
+    switch (movement) {
+    case ngaba::Movement::N_E:
+    case ngaba::Movement::S_W:
+    case ngaba::Movement::W_N:
+    case ngaba::Movement::E_S:
+        return true;
+    default:
+        return false;
+    }
+// Ferme le bloc d instructions courant.
+}
+
+// Indique si le mouvement correspond a une traversee vers la sortie opposee.
+bool isCrossRingMovement(ngaba::Movement movement)
+// Ouvre un nouveau bloc d instructions.
+{
+    switch (movement) {
+    case ngaba::Movement::N_S:
+    case ngaba::Movement::S_N:
+    case ngaba::Movement::W_E:
+    case ngaba::Movement::E_W:
+        return true;
+    default:
+        return false;
+    }
+// Ferme le bloc d instructions courant.
+}
+
+// Retourne l'intensite de contrainte sur l'anneau selon le type de mouvement.
+qreal ringTargetNorm(ngaba::Movement movement)
+// Ouvre un nouveau bloc d instructions.
+{
+    if (isShortTurn(movement)) {
+        return 1.24;
+    }
+    if (isCrossRingMovement(movement)) {
+        return 1.34;
+    }
+    return 1.48;
+// Ferme le bloc d instructions courant.
+}
+
+// Force davantage les vehicules a longer l'anneau plutot que couper le centre.
+QPointF enforceRoundaboutRing(const QPointF& point, ngaba::Movement movement, qreal progress)
+// Ouvre un nouveau bloc d instructions.
+{
+    // N'agit surtout que dans la portion centrale de la trajectoire.
+    if (progress <= 0.18 || progress >= 0.86) {
+        return point;
+    }
+
+    // Cree un poids lisse qui renforce la contrainte vers le milieu du trajet.
+    const qreal normalized = std::clamp((progress - 0.18) / 0.68, 0.0, 1.0);
+    const qreal envelope = std::sin(normalized * kPi);
+    const qreal desiredNorm = 1.02 + (ringTargetNorm(movement) - 1.02) * envelope;
+
+    const qreal dx = point.x() - kRoundaboutCenter.x();
+    const qreal dy = point.y() - kRoundaboutCenter.y();
+    const qreal norm = std::sqrt((dx * dx) / (kSafetyRadiusX * kSafetyRadiusX)
+        + (dy * dy) / (kSafetyRadiusY * kSafetyRadiusY));
+
+    if (norm <= 0.0001 || norm >= desiredNorm) {
+        return point;
+    }
+
+    const qreal scale = desiredNorm / norm;
+    return QPointF(kRoundaboutCenter.x() + dx * scale, kRoundaboutCenter.y() + dy * scale);
+// Ferme le bloc d instructions courant.
+}
+
 // Declare ou utilise une fonction necessaire au programme.
 QColor lightToColor(ngaba::LightColor color)
 // Ouvre un nouveau bloc d instructions.
@@ -455,11 +529,34 @@ QPointF IntersectionWidget::pointOnRoute(ngaba::Movement movement, qreal progres
             // Declare une constante ou une valeur partagee par le systeme.
             const qreal local = segmentLength <= 0.0 ? 0.0 : (target - walked) / segmentLength;
             // Definit le comportement d une methode du simulateur.
-            const QPointF point = segment.pointAt(std::clamp(local, 0.0, 1.0));
+            QPointF point = segment.pointAt(std::clamp(local, 0.0, 1.0));
+            point = enforceRoundaboutRing(point, movement, clamped);
             // Verifie une condition avant d executer ce bloc.
             if (angleDeg != nullptr) {
-                // Initialise ou met a jour une valeur du programme.
-                *angleDeg = directionAngle(segment.p1(), segment.p2());
+                // Recalcule une tangente locale visible apres application de la contrainte annulaire.
+                const qreal preview = std::min<qreal>(1.0, clamped + 0.018);
+                qreal previewAngle = 0.0;
+                QPointF previewPoint;
+                if (preview > clamped) {
+                    const qreal previewTarget = totalLength * preview;
+                    qreal previewWalked = 0.0;
+                    previewPoint = point;
+                    for (int j = 1; j < points.size(); ++j) {
+                        const QLineF previewSegment(points[j - 1], points[j]);
+                        const qreal previewLength = previewSegment.length();
+                        if (previewWalked + previewLength >= previewTarget || j == points.size() - 1) {
+                            const qreal previewLocal = previewLength <= 0.0 ? 0.0 : (previewTarget - previewWalked) / previewLength;
+                            previewPoint = previewSegment.pointAt(std::clamp(previewLocal, 0.0, 1.0));
+                            previewPoint = enforceRoundaboutRing(previewPoint, movement, preview);
+                            previewAngle = directionAngle(point, previewPoint);
+                            break;
+                        }
+                        previewWalked += previewLength;
+                    }
+                } else {
+                    previewAngle = directionAngle(segment.p1(), segment.p2());
+                }
+                *angleDeg = previewAngle;
             // Ferme le bloc d instructions courant.
             }
             // Retourne la valeur calculee par la fonction.
@@ -908,42 +1005,29 @@ void IntersectionWidget::drawWaitingVehicles(QPainter& painter, const Simulation
 void IntersectionWidget::drawMovingVehicles(QPainter& painter, const SimulationSnapshot& snapshot) const
 // Ouvre un nouveau bloc d instructions.
 {
-    // Parcourt une suite de valeurs ou d elements.
-    for (const ngaba::Movement movement : ngaba::allMovements()) {
-        // Definit le comportement d une methode du simulateur.
-        const int count = snapshot.movements[ngaba::movementIndex(movement)];
+    // Parcourt les vehicules persistants calcules par le moteur.
+    for (const AnimatedVehicle& vehicle : snapshot.movingVehicles) {
         // Verifie une condition avant d executer ce bloc.
-        if (count <= 0) {
+        if (vehicle.progress <= 0.0) {
             // Passe a l iteration suivante de la boucle.
             continue;
         // Ferme le bloc d instructions courant.
         }
 
-        // Definit le comportement d une methode du simulateur.
-        const int visible = std::min(count, 2);
-        // Parcourt une suite de valeurs ou d elements.
-        for (int i = 0; i < visible; ++i) {
-            // Declare une constante ou une valeur partagee par le systeme.
-            const qreal base = snapshot.animationProgress * 0.9;
-            // Declare une constante ou une valeur partagee par le systeme.
-            const qreal progress = base - static_cast<qreal>(i) * 0.18;
-            // Verifie une condition avant d executer ce bloc.
-            if (progress <= 0.0) {
-                // Passe a l iteration suivante de la boucle.
-                continue;
-            // Ferme le bloc d instructions courant.
-            }
+        // Adoucit la progression pour limiter l'impression de mouvement mecanique.
+        const qreal clamped = std::clamp(static_cast<qreal>(vehicle.progress), 0.0, 1.0);
+        const qreal eased = clamped < 0.5
+            ? 2.0 * clamped * clamped
+            : 1.0 - std::pow(-2.0 * clamped + 2.0, 2.0) / 2.0;
 
-            // Initialise ou met a jour une valeur du programme.
-            qreal angle = 0.0;
-            // Definit le comportement d une methode du simulateur.
-            QPointF position = pointOnRoute(movement, std::clamp(progress, 0.03, 0.97), &angle);
-            // Initialise ou met a jour une valeur du programme.
-            position = clampAwayFromIsland(position);
-            // Declare ou utilise une fonction necessaire au programme.
-            drawVehicle(painter, position, angle, movementColor(movement), 3.2, 1.8);
-        // Ferme le bloc d instructions courant.
-        }
+        // Initialise ou met a jour une valeur du programme.
+        qreal angle = 0.0;
+        // Definit le comportement d une methode du simulateur.
+        QPointF position = pointOnRoute(vehicle.movement, std::clamp(eased, 0.03, 0.97), &angle);
+        // Initialise ou met a jour une valeur du programme.
+        position = clampAwayFromIsland(position);
+        // Declare ou utilise une fonction necessaire au programme.
+        drawVehicle(painter, position, angle, movementColor(vehicle.movement), 3.2, 1.8);
     // Ferme le bloc d instructions courant.
     }
 // Ferme le bloc d instructions courant.

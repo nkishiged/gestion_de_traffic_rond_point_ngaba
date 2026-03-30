@@ -13,6 +13,7 @@ L'application permet de :
 - simuler un carrefour de type rond-point en temps reel ;
 - gerer les phases de signalisation avec adaptation du trafic ;
 - visualiser les flux `aller` et `retour` sur les differentes branches ;
+- preparer une base exploitable pour une comparaison future avec `SUMO` ;
 - illustrer une implementation concrete en `C++/Qt` pour un projet academique.
 
 ## Fonctionnalites principales
@@ -22,6 +23,7 @@ L'application permet de :
 - distinction visuelle des voies `aller` et `retour` ;
 - animation des vehicules sur les axes principaux ;
 - moteur de simulation separe de l'interface ;
+- possibilite d'etendre le projet avec `SUMO` pour des simulations microscopiques plus poussees ;
 - architecture exploitable dans `Qt Creator` ;
 - scripts PowerShell pour compiler et lancer rapidement le projet.
 
@@ -32,6 +34,7 @@ L'application permet de :
 - `CMake`
 - `MSYS2 / MinGW-w64`
 - `PowerShell`
+- `SUMO` peut etre mobilise comme outil externe de validation ou d'extension
 
 ## Structure du depot
 
@@ -72,6 +75,19 @@ gestion_trafic_rond_point_ngaba/
 
 - `IntersectionWidget.*`
   Rendu graphique du rond-point, des vehicules, du fond satellite et des feux.
+
+## Role de SUMO
+
+`SUMO` (Simulation of Urban MObility) est envisage dans ce projet comme un outil externe
+de simulation du trafic permettant de comparer le prototype `Qt` a une simulation
+microscopique plus detaillee.
+
+Dans l'etat actuel du depot, le coeur du projet repose sur le simulateur `C++/Qt`.
+`SUMO` intervient surtout comme piste d'extension pour :
+
+- generer ou comparer des scenarios de circulation plus riches ;
+- confronter les trajectoires et les debits du prototype a un simulateur specialise ;
+- preparer une evolution future vers une co-simulation ou une validation plus fine.
 
 ## Livrables academiques
 
@@ -235,6 +251,7 @@ build-manual\gestion_trafic_rond_point_ngaba.exe
 
 - L'ancien prototype Python a ete retire du projet.
 - Le depot est maintenant centre sur une implementation `C++/Qt`.
+- `SUMO` est considere comme un outil complementaire de simulation et de validation, pas comme le moteur principal actuel.
 - Le rendu visuel est base sur une vue inspiree du rond-point Ngaba avec fond satellite.
 - La simulation et l'interface occupent toute la fenetre principale.
 

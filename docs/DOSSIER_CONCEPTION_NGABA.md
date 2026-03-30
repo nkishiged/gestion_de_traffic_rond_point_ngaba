@@ -18,7 +18,7 @@ Ce document joue le role de dossier academique de:
 3. modelisation fonctionnelle et comportementale,
 4. conception logique et logicielle,
 5. plan de validation,
-6. mise en relation avec le prototype Python du depot.
+6. mise en relation avec le prototype C++/Qt du depot.
 
 ## 2. Problematique
 
@@ -72,6 +72,7 @@ Le systeme ne traite pas encore:
 - la communication V2X,
 - la coordination avec d'autres carrefours voisins,
 - le pilotage d'equipements physiques reels,
+- l'integration active d'un simulateur externe comme `SUMO` dans la boucle principale,
 - la tolerance aux pannes de type industrielle certifiee.
 
 ### 4.2 Hypotheses de travail
@@ -159,7 +160,7 @@ Dans une implementation temps reel cible, on peut retenir l'organisation suivant
 - duree orange: 3 s,
 - duree de securite tout rouge: 1 s.
 
-Le prototype Python respecte une echelle logique de temps, mais ne constitue pas une preuve
+Le prototype C++/Qt respecte une echelle logique de temps, mais ne constitue pas une preuve
 de respect strict des contraintes temps reel d'une plateforme embarquee.
 
 ## 8. Modelisation du systeme
@@ -252,10 +253,11 @@ Une architecture cible raisonnable est la suivante:
 
 Le depot contient deja une premiere decomposition:
 
-- [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py): logique metier des phases,
-- [simulation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/simulation.py): orchestration de la simulation,
-- [visualisation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/visualisation.py): interface graphique,
-- [main.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/main.py): lancement.
+- `src/TrafficModel.*`: logique metier des phases, mouvements, files et durees adaptatives,
+- `src/SimulationEngine.*`: orchestration de la simulation et evolution temporelle,
+- `src/IntersectionWidget.*`: interface graphique et rendu du carrefour,
+- `src/MainWindow.*`: assemblage de la fenetre principale et des interactions utilisateur,
+- `src/main.cpp`: lancement de l'application.
 
 Cette architecture est correcte pour une maquette, mais pas encore pour un systeme cible
 industrialise. Il manque notamment:
@@ -265,6 +267,18 @@ industrialise. Il manque notamment:
 - un composant `Journalisation`,
 - un composant `Configuration`,
 - une separation plus nette entre simulation, logique metier et presentation.
+
+### 9.2.1 Place de SUMO dans le travail
+
+`SUMO` peut etre utilise comme outil externe de simulation du trafic pour enrichir ou
+valider le prototype Ngaba. Dans ce travail, il ne constitue pas le moteur principal de
+l'application, qui reste implemente en `C++/Qt`.
+
+Son interet dans le cadre du projet est le suivant:
+
+- comparer le comportement du prototype a une simulation microscopique specialisee ;
+- preparer des scenarios de trafic plus riches pour la validation ;
+- envisager une extension future vers une co-simulation ou un export de scenarios.
 
 ### 9.3 Proposition de decomposition cible
 
@@ -410,10 +424,10 @@ En cas d'incoherence capteurs ou de defaut de commande:
 
 ### 12.3 Cartographie code / conception
 
-- [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py): correspond a une partie de la couche decision.
-- [simulation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/simulation.py): correspond a l'orchestration du scenario de simulation.
-- [visualisation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/visualisation.py): correspond a la supervision locale.
-- [main.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/main.py): correspond au point d'entree.
+- `src/TrafficModel.*`: correspond principalement a la couche decision et au modele metier.
+- `src/SimulationEngine.*`: correspond a l'orchestration du scenario de simulation.
+- `src/IntersectionWidget.*`: correspond a la supervision graphique locale.
+- `src/MainWindow.*` et `src/main.cpp`: correspondent au point d'entree et a l'assemblage de l'application.
 
 ## 13. Plan de validation
 

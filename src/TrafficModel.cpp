@@ -106,29 +106,29 @@ const std::array<QueueVisualConfig, kBranchCount> kQueueConfigs{{
 // Declare une constante ou une valeur partagee par le systeme.
 const std::array<QVector<QPointF>, kMovementCount> kRoutes{{
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.2, 66.0}, {52.0, 59.0}, {47.0, 55.0}, {36.0, 52.6}, {20.0, 52.6}, {0.0, 52.6}},
+    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.4, 68.0}, {52.6, 62.0}, {49.5, 57.8}, {44.0, 54.8}, {34.0, 53.0}, {20.0, 52.6}, {0.0, 52.6}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.2, 66.0}, {53.8, 59.0}, {55.0, 53.0}, {54.2, 47.0}, {52.0, 32.0}, {52.0, 0.0}},
+    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.6, 68.0}, {55.4, 61.8}, {59.4, 56.8}, {60.8, 50.0}, {58.6, 41.8}, {53.8, 33.0}, {52.0, 0.0}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.5, 66.0}, {56.5, 59.0}, {62.0, 57.0}, {71.0, 53.0}, {84.0, 47.8}, {100.0, 47.8}},
+    QVector<QPointF>{{53.2, 100.0}, {53.2, 82.0}, {53.8, 68.0}, {56.2, 61.8}, {61.0, 57.4}, {68.8, 53.6}, {82.5, 48.8}, {100.0, 47.8}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{56.8, 0.0}, {56.8, 22.0}, {56.8, 40.0}, {56.8, 54.0}, {56.4, 61.0}, {56.0, 76.0}, {56.0, 100.0}},
+    QVector<QPointF>{{56.8, 0.0}, {56.8, 22.0}, {56.0, 36.0}, {59.0, 45.0}, {60.6, 52.2}, {58.0, 60.8}, {56.2, 75.0}, {56.0, 100.0}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{56.0, 0.0}, {56.0, 20.0}, {56.0, 37.0}, {58.0, 44.0}, {63.0, 47.0}, {74.0, 47.8}, {100.0, 47.8}},
+    QVector<QPointF>{{56.0, 0.0}, {56.0, 22.0}, {56.4, 36.5}, {58.8, 42.8}, {63.8, 46.6}, {72.0, 47.8}, {100.0, 47.8}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{56.0, 0.0}, {56.0, 22.0}, {56.0, 37.0}, {54.0, 45.0}, {49.0, 49.0}, {35.0, 52.6}, {0.0, 52.6}},
+    QVector<QPointF>{{56.0, 0.0}, {56.0, 22.0}, {55.2, 36.8}, {52.6, 43.6}, {47.6, 48.6}, {39.0, 51.6}, {22.0, 52.6}, {0.0, 52.6}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {38.0, 48.2}, {50.0, 48.0}, {70.0, 47.8}, {100.0, 47.8}},
+    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {36.0, 48.4}, {44.0, 50.6}, {49.6, 55.4}, {55.0, 60.8}, {63.0, 57.2}, {73.5, 52.0}, {100.0, 47.8}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {38.0, 48.2}, {49.0, 53.0}, {54.0, 59.0}, {56.8, 72.0}, {56.8, 100.0}},
+    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {36.0, 48.4}, {45.4, 51.6}, {51.2, 57.2}, {55.0, 66.8}, {56.8, 100.0}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {38.0, 48.2}, {47.0, 48.0}, {51.0, 45.0}, {52.0, 36.0}, {52.0, 0.0}},
+    QVector<QPointF>{{0.0, 48.2}, {20.0, 48.2}, {36.0, 48.2}, {45.0, 46.8}, {50.2, 42.4}, {52.8, 34.8}, {52.0, 0.0}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {59.0, 52.6}, {42.0, 52.6}, {0.0, 52.6}},
+    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {60.8, 49.6}, {55.6, 44.2}, {50.2, 39.2}, {41.2, 45.8}, {30.0, 50.8}, {0.0, 52.6}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {61.0, 55.0}, {57.5, 61.0}, {56.8, 74.0}, {56.8, 100.0}},
+    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {60.8, 55.2}, {57.4, 61.2}, {56.6, 72.8}, {56.8, 100.0}},
     // Execute cette instruction dans le flux normal du programme.
-    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {60.0, 48.0}, {54.0, 44.0}, {52.0, 32.0}, {52.0, 0.0}},
+    QVector<QPointF>{{100.0, 52.0}, {82.0, 52.0}, {68.0, 52.0}, {60.6, 48.8}, {56.2, 43.8}, {53.4, 35.6}, {52.0, 0.0}},
 // Execute cette instruction dans le flux normal du programme.
 }};
 

@@ -11,6 +11,33 @@ namespace {
 
 // Declare une constante ou une valeur partagee par le systeme.
 constexpr int kFrameIntervalMs = 33;
+// Declare une constante ou une valeur partagee par le systeme.
+constexpr double kFrameIntervalSeconds = static_cast<double>(kFrameIntervalMs) / 1000.0;
+
+// Definit une vitesse visuelle selon le type de mouvement.
+double vehicleSpeed(ngaba::Movement movement)
+// Ouvre un nouveau bloc d instructions.
+{
+    switch (movement) {
+    case ngaba::Movement::N_S:
+    case ngaba::Movement::S_N:
+    case ngaba::Movement::W_E:
+    case ngaba::Movement::E_W:
+        return 0.92;
+    case ngaba::Movement::N_E:
+    case ngaba::Movement::S_W:
+    case ngaba::Movement::W_N:
+    case ngaba::Movement::E_S:
+        return 0.78;
+    case ngaba::Movement::N_W:
+    case ngaba::Movement::S_E:
+    case ngaba::Movement::W_S:
+    case ngaba::Movement::E_N:
+        return 0.66;
+    }
+    return 0.80;
+// Ferme le bloc d instructions courant.
+}
 
 // Ferme le bloc d instructions courant.
 }  // namespace
@@ -140,6 +167,8 @@ void SimulationEngine::reset()
     prepareSecond();
     // Initialise ou met a jour une valeur du programme.
     m_snapshot.animationProgress = 0.0;
+    // Reinitialise la flotte visuelle des vehicules en mouvement.
+    m_snapshot.movingVehicles.clear();
 
     // Verifie une condition avant d executer ce bloc.
     if (wasRunning) {
@@ -154,6 +183,52 @@ void SimulationEngine::reset()
 
     // Declare ou utilise une fonction necessaire au programme.
     Q_EMIT stateChanged();
+// Ferme le bloc d instructions courant.
+}
+
+// Definit le comportement d une methode du simulateur.
+void SimulationEngine::spawnAnimatedVehicles()
+// Ouvre un nouveau bloc d instructions.
+{
+    // Parcourt une suite de valeurs ou d elements.
+    for (const ngaba::Movement movement : ngaba::allMovements()) {
+        // Declare une constante ou une valeur partagee par le systeme.
+        const int count = m_snapshot.movements[ngaba::movementIndex(movement)];
+        // Definit le comportement d une methode du simulateur.
+        const int visible = std::min(count, 3);
+        // Parcourt une suite de valeurs ou d elements.
+        for (int i = 0; i < visible; ++i) {
+            // Cree un decalage de depart pour espacer visuellement les vehicules d'un meme flux.
+            AnimatedVehicle vehicle;
+            vehicle.movement = movement;
+            vehicle.progress = -0.16 * static_cast<double>(i);
+            vehicle.speed = vehicleSpeed(movement);
+            m_snapshot.movingVehicles.push_back(vehicle);
+        // Ferme le bloc d instructions courant.
+        }
+    // Ferme le bloc d instructions courant.
+    }
+// Ferme le bloc d instructions courant.
+}
+
+// Definit le comportement d une methode du simulateur.
+void SimulationEngine::updateAnimatedVehicles(double deltaSeconds)
+// Ouvre un nouveau bloc d instructions.
+{
+    // Parcourt une suite de valeurs ou d elements.
+    for (AnimatedVehicle& vehicle : m_snapshot.movingVehicles) {
+        // Fait progresser chaque vehicule selon sa vitesse de trajectoire.
+        vehicle.progress += deltaSeconds * vehicle.speed;
+    // Ferme le bloc d instructions courant.
+    }
+
+    // Supprime les vehicules deja sortis de la scene.
+    m_snapshot.movingVehicles.erase(
+        std::remove_if(m_snapshot.movingVehicles.begin(), m_snapshot.movingVehicles.end(),
+            [](const AnimatedVehicle& vehicle) {
+                return vehicle.progress >= 1.08;
+            }),
+        m_snapshot.movingVehicles.end());
 // Ferme le bloc d instructions courant.
 }
 
@@ -174,6 +249,9 @@ void SimulationEngine::prepareSecond()
 void SimulationEngine::advanceOneSecond()
 // Ouvre un nouveau bloc d instructions.
 {
+    // Memorise les vehicules servis avant mise a jour des files.
+    spawnAnimatedVehicles();
+
     // Definit le comportement d une methode du simulateur.
     m_snapshot.traffic = ngaba::updateTraffic(m_snapshot.traffic, m_snapshot.movements, m_rng);
     // Execute cette instruction dans le flux normal du programme.
@@ -221,6 +299,9 @@ void SimulationEngine::onFrameTick()
         return;
     // Ferme le bloc d instructions courant.
     }
+
+    // La progression inter-frame reste utile pour les autres elements animes.
+    updateAnimatedVehicles(kFrameIntervalSeconds);
 
     // Initialise ou met a jour une valeur du programme.
     m_logicAccumulatorMs += kFrameIntervalMs;

@@ -11,6 +11,14 @@
 
 // Inclut une dependance necessaire a ce fichier.
 #include <random>
+#include <vector>
+
+// Declare une structure de donnees pour un vehicule en mouvement.
+struct AnimatedVehicle {
+    ngaba::Movement movement = ngaba::Movement::N_S;
+    double progress = 0.0;
+    double speed = 1.0;
+};
 
 // Declare une structure de donnees partagee par le simulateur.
 struct SimulationSnapshot {
@@ -34,6 +42,8 @@ struct SimulationSnapshot {
     QString adaptation = "Flux nominal";
     // Initialise ou met a jour une valeur du programme.
     bool running = false;
+    // Definit les vehicules actuellement visibles en mouvement.
+    std::vector<AnimatedVehicle> movingVehicles;
 // Execute cette instruction dans le flux normal du programme.
 };
 
@@ -83,6 +93,10 @@ private:
     void prepareSecond();
     // Declare ou utilise une fonction necessaire au programme.
     void advanceOneSecond();
+    // Declare ou utilise une fonction necessaire au programme.
+    void spawnAnimatedVehicles();
+    // Declare ou utilise une fonction necessaire au programme.
+    void updateAnimatedVehicles(double deltaSeconds);
 
     // Execute cette instruction dans le flux normal du programme.
     QTimer m_frameTimer;

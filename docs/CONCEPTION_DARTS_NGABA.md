@@ -70,7 +70,7 @@ Sorties:
 - mesures de trafic par mouvement.
 
 Implementation prototype:
-- generation d'arrivees dans [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py).
+- generation d'arrivees et mise a jour du trafic dans `src/TrafficModel.*`.
 
 ### 4.2 Tache `EvaluationTrafic`
 
@@ -86,7 +86,7 @@ Sorties:
 - charges agregees.
 
 Implementation prototype:
-- fonctions de calcul dans [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py).
+- fonctions de calcul dans `src/TrafficModel.*`.
 
 ### 4.3 Tache `PlanificationPhases`
 
@@ -105,7 +105,7 @@ Sorties:
 - duree de phase.
 
 Implementation prototype:
-- logique de phase dans [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py).
+- logique de phase dans `src/TrafficModel.*` et coordination temporelle dans `src/SimulationEngine.*`.
 
 ### 4.4 Tache `GestionSecurite`
 
@@ -140,7 +140,7 @@ Sorties:
 - fenetre de supervision.
 
 Implementation prototype:
-- rendu Matplotlib dans [visualisation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/visualisation.py).
+- rendu Qt Widgets dans `src/IntersectionWidget.*`.
 
 ### 4.6 Tache `OrchestrationSimulation`
 
@@ -149,7 +149,7 @@ Role:
 - coordonner la decision et l'affichage.
 
 Implementation prototype:
-- boucle principale dans [simulation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/simulation.py).
+- boucle principale dans `src/SimulationEngine.*`.
 
 ## 5. Mode d'activation des taches
 
@@ -174,8 +174,8 @@ Implementation prototype:
 
 ### 6.2 Nature des communications
 
-Dans le prototype actuel, les communications sont realisees par appels de fonctions et
-partage de structures Python simples. Dans une version temps reel plus aboutie, elles
+Dans le prototype actuel, les communications sont realisees par appels de fonctions,
+signaux Qt et partage de structures C++. Dans une version temps reel plus aboutie, elles
 pourraient prendre la forme de files de messages, boites aux lettres ou buffers
 proteges.
 
@@ -199,12 +199,13 @@ faudrait raffiner:
 
 ## 8. Allocation logicielle aux modules existants
 
-| Module Python | Responsabilite DARTS principale |
+| Module C++/Qt | Responsabilite DARTS principale |
 | --- | --- |
-| [main.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/main.py) | lancement du systeme |
-| [simulation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/simulation.py) | orchestration des taches |
-| [carrefour.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/carrefour.py) | acquisition simulee, evaluation et decision |
-| [visualisation.py](/i:/COURS/2ICI/SITR/gestion_trafic_rond_point_ngaba/visualisation.py) | supervision graphique |
+| `src/main.cpp` | lancement du systeme |
+| `src/MainWindow.*` | assemblage de la fenetre et des commandes utilisateur |
+| `src/SimulationEngine.*` | orchestration des taches |
+| `src/TrafficModel.*` | acquisition simulee, evaluation et decision |
+| `src/IntersectionWidget.*` | supervision graphique |
 
 ## 9. Politique temporelle
 
